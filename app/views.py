@@ -29,6 +29,13 @@ def about():
     return render_template('about.html')
 
 
+@app.route('/secure-page')
+@login_required
+def secure_page():
+    """Render a page on our website that only logged in users can access."""
+    return render_template('secure_page.html')
+
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if current_user.is_authenticated:
@@ -41,11 +48,9 @@ def login():
             username = form.username.data
             password = form.password.data
 
-            # using your model, query database for a user based on the username
-            # and password submitted. 
+            # query database for a user based on the username
             user = UserProfile.query.filter_by(username=username).first()
-
-            # compare the password hash and ensure that a user was found
+            # validate the password and ensure that a user was found
             if user is not None and check_password_hash(user.password, password):
                 login_user(user)    # load into session
                 flash('Logged in successfully.', 'success') # flash a message to the user
